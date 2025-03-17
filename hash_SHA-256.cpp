@@ -69,11 +69,11 @@ int main() {
         cout << "SHA-256 Hash: " << hash << endl;
 
         // Sign the hash using the private key, with encrypt method
-        string signature = encrypt(n, d, hash, alphabet_to_index_hexa, index_to_alphabet_hexa); 
+        string signature = encrypt(n, d, hash, alphabet_to_index_hexa, index_to_alphabet_hexa, false); 
         cout << "Signature: " << signature << endl;
 
         // Verify the signature using public key, with decrypt method
-        string signature_decrypted = decrypt(n, e, signature, alphabet_to_index_hexa, index_to_alphabet_hexa); 
+        string signature_decrypted = decrypt(n, e, signature, alphabet_to_index_hexa, index_to_alphabet_hexa, false); 
         cout << "Decrypted Signature: " << signature_decrypted << endl;
         if (hash != signature_decrypted) {
             cout << "Signature verification failed. Hash does not match decrypted signature." << endl;

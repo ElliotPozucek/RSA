@@ -1,5 +1,3 @@
-// rsa.h - Elliot Pozucek - Security - TP1
-
 #ifndef RSA_H
 #define RSA_H
 
@@ -9,12 +7,13 @@
 #include "alphabets.cpp"
 
 // warning when using exactly 32 bits (overflow). Use 28 bits for quick tests.
-#define NB_BITS_PRIME_FACTORS 25
+#define NB_BITS_PRIME_FACTORS 32
 // subtract 1 to avoid overflow when using exactly 32 bits
-#define UPPER_BOUND_PRIME_FACTOR (1U << NB_BITS_PRIME_FACTORS)
+#define UPPER_BOUND_PRIME_FACTOR (1U << NB_BITS_PRIME_FACTORS) - 1
 #define LOWER_BOUND_PRIME_FACTOR (1U << NB_BITS_PRIME_FACTORS - 4)
 #define PRIME_FACTOR_DISTANCE_THRESHOLD (1U << NB_BITS_PRIME_FACTORS / 2)
-#define NUMBER_OF_ITERATIONS_PRIME_TEST 15
+// Used in the Miller-Rabin primality test. Must be at least 8.
+#define NUMBER_OF_ITERATIONS_PRIME_TEST 10
 
 using namespace std;
 
@@ -32,9 +31,10 @@ bool rsa();
  * @param p the first prime factor (modified, 32 bits)
  * @param q the second prime factor (modified, 32 bits)
  * @param iterations the number of iterations needed to generate the prime factors (modified)
+ * @param verbose if true, display the steps of the prime factors generation
  * @return the modulus n = p.q (64 bits)
  */
-unsigned long generate_modulus_prime_factors(unsigned int &p, unsigned int &q, int &iterations);
+unsigned long generate_modulus_prime_factors(unsigned int &p, unsigned int &q, int &iterations, bool verbose = true);
 
 /**
  * Generate the public key e.
@@ -93,19 +93,25 @@ bool square_root_test(unsigned long number);
  * @param message the message to encrypt
  * @param alphabet_to_index the alphabet dictionnary
  * @param index_to_alphabet the index dictionnary
+ * @param verbose true to display the encryption steps, false otherwise
  * @return the encrypted message
  */
 string encrypt(unsigned long n, unsigned long e, string M, 
-    const unordered_map<char, int>& alphabet_to_index, const unordered_map<int, char>& index_to_alphabet);
+    const unordered_map<char, int>& alphabet_to_index, const unordered_map<int, char>& index_to_alphabet,
+    bool verbose = true);
 
 /**
  * Decrypt a message using the private key.
  * @param n the modulus
  * @param d the private key
  * @param C the message to decrypt
+ * @param alphabet_to_index the alphabet dictionnary
+ * @param index_to_alphabet the index dictionnary
+ * @param verbose if true, display the steps of the decryption
  * @return the decrypted message
  */
 string decrypt(unsigned long n, unsigned long d, string C, 
-    const unordered_map<char, int>& alphabet_to_index, const unordered_map<int, char>& index_to_alphabet);
+    const unordered_map<char, int>& alphabet_to_index, const unordered_map<int, char>& index_to_alphabet,
+    bool verbose = true);
 
 #endif

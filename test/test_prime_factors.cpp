@@ -3,8 +3,9 @@
 void test_generate_modulus_prime_factors() {
     unsigned int p, q;
     int iter = 0;
-    unsigned long n = generate_modulus_prime_factors(p, q, iter);
+    unsigned long n = generate_modulus_prime_factors(p, q, iter, false);
 
+    cout << "Testing prime factors generation..." << endl;
     cout << "p = " << p << endl << "q =  " << q << endl << "n = " << n << endl;
     unsigned long diff;
     if (p < q) {
@@ -29,6 +30,6 @@ void test_generate_modulus_prime_factors() {
         cout << "p and q are too close" << endl;
     }
     if (is_p_prime && is_q_prime && diff > PRIME_FACTOR_DISTANCE_THRESHOLD) {
-        cout << "p and q are appropriate prime factors" << endl;
+        cout << "p and q are appropriate prime factors." << endl;
     }
 }
