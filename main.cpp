@@ -3,6 +3,7 @@
 #include "rsa.h"
 #include "test/test_prime.h"
 #include "test/test_prime_factors.h"
+#include "test/test_encrypt.h"
 #include <cmath>
 
 
@@ -21,8 +22,9 @@ int main() {
     // test_prime();
     // test_generate_modulus_prime_factors();
 
-    rsa();
-    
+    // rsa();
+
+    test_encrypt(2047, 179, "ENVOYEZ_2500$.", "AVOA25ALMA2PALPAR0ADC");
     
     
     return 0;    

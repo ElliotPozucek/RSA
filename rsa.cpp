@@ -126,6 +126,56 @@ unsigned long generate_private_key(unsigned int e, unsigned long euler_totient, 
     return u;
 }
 
+string encrypt(unsigned long n, unsigned long e, string M) {
+    // first we need to know the size of block
+    // b < ln(n) / ln(L), with L the size of the alphabet
+    int b = floor(log(n) / log(ALPHABET_SIZE));
+    cout << "Block size : " << b << endl;
+    cout << "Message : " << M << endl;
+
+    // when the message is not a multiple of b, we add some padding ('A' -> 0)
+    if (M.size() % b != 0) {
+        M += string(b - M.size() % b, 'A');
+    }
+
+    // we display the message by block, with padding
+    cout << "Message by block (with padding) : ";
+    for (int i = 0; i < M.size() / b; i++) {
+        cout << M.substr(i * b, b) << " ";
+    }
+    cout << endl;
+
+    // we convert the message in its numerical representation (base 10)
+    int* converted_message = new int[M.size() / b + 1]();
+    cout << "Base 10 representation of the message : ";
+    for (int i = 0; i < M.size() / b; i++) {
+        converted_message[i] = 0;
+        for (int j = 0; j < b; j++) {
+            converted_message[i] += alphabet_to_index.at(M[i * b + j]) * pow(ALPHABET_SIZE, b - j - 1);
+        }
+        cout << converted_message[i] << " ";
+    }
+    cout << endl;
+
+    // the encrypted message
+    string encrypted_message = "";
+    // encryption
+    cout << "Base 10 representation of the encrypted message : ";
+    for (int i = 0; i < M.size() / b; i++) {
+        // C = M^e mod n
+        unsigned long c = modular_exponentiation(converted_message[i], e, n);
+        cout << c << " ";
+        // we convert the number with the alphabet
+        // the size of block for converting the encrypted message to its alphabet representation is b + 1
+        for (int j = 0; j < b + 1; j++) {
+            encrypted_message += index_to_alphabet.at(c / (unsigned long)pow(ALPHABET_SIZE, b + 1 - j - 1));
+            c %= (unsigned long)pow(ALPHABET_SIZE, b + 1 - j - 1);
+        }
+    }
+    cout << endl << "Encrypted message : " << encrypted_message << endl;
+    return encrypted_message;
+}
+
 bool rsa() {
     unsigned int p, q;
     int iter = 0;
