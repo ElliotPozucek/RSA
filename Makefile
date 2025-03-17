@@ -16,3 +16,6 @@ $(TEST_FOLDER)/test_prime_factors.o : $(TEST_FOLDER)/test_prime_factors.cpp $(TE
 
 main.o : main.cpp
 	g++ -c main.cpp
+
+clean:
+	rm -f *.o $(TEST_FOLDER)/*.o

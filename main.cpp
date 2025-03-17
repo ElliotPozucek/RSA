@@ -13,13 +13,15 @@ void test_modular_expo() {
 }
 
 int main() {
-    cout << "UPPER_BOUND_PRIME_FACTOR: " << UPPER_BOUND_PRIME_FACTOR << endl;
-    cout << "LOWER_BOUND_PRIME_FACTOR: " << LOWER_BOUND_PRIME_FACTOR << endl;
-    cout << "PRIME_FACTOR_DISTANCE_THRESHOLD: " << PRIME_FACTOR_DISTANCE_THRESHOLD << endl;
+    // cout << "UPPER_BOUND_PRIME_FACTOR: " << UPPER_BOUND_PRIME_FACTOR << endl;
+    // cout << "LOWER_BOUND_PRIME_FACTOR: " << LOWER_BOUND_PRIME_FACTOR << endl;
+    // cout << "PRIME_FACTOR_DISTANCE_THRESHOLD: " << PRIME_FACTOR_DISTANCE_THRESHOLD << endl;
 
-    test_modular_expo();
-    test_prime();
-    test_generate_modulus_prime_factors();
+    // test_modular_expo();
+    // test_prime();
+    // test_generate_modulus_prime_factors();
+
+    rsa();
     
     
     

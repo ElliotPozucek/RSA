@@ -8,7 +8,7 @@
 #include <climits>
 
 // warning when using exactly 32 bits (overflow). Use 28 bits for quick tests.
-#define NB_BITS_PRIME_FACTORS 28
+#define NB_BITS_PRIME_FACTORS 25
 // subtract 1 to avoid overflow when using exactly 32 bits
 #define UPPER_BOUND_PRIME_FACTOR (1U << NB_BITS_PRIME_FACTORS)
 #define LOWER_BOUND_PRIME_FACTOR (1U << NB_BITS_PRIME_FACTORS - 4)
@@ -16,6 +16,12 @@
 #define NUMBER_OF_ITERATIONS_PRIME_TEST 15
 
 using namespace std;
+
+/**
+ * Generate the RSA keys.
+ * @return true if the keys were successfully generated, false otherwise
+ */
+bool rsa();
 
 /**
  * Generate the two prime factors of the modulus.
@@ -36,7 +42,7 @@ unsigned long generate_modulus_prime_factors(unsigned int &p, unsigned int &q, i
  * @param euler_totient the euler totient of n (64 bits)
  * @return the public key e (64 bits)   
  */
-unsigned long generate_public_key(unsigned long n, unsigned long euler_totient);
+unsigned long generate_public_key(unsigned long n, unsigned long euler_totient, int &iterations);
 
 /**
  * Generate the private key d such as e.d + k.φ(n) = 1.
@@ -45,7 +51,7 @@ unsigned long generate_public_key(unsigned long n, unsigned long euler_totient);
  * @param euler_totient the euler totient of n (64 bits)
  * @return the private key d (64 bits)
  */
-unsigned long generate_private_key(unsigned int e, unsigned long euler_totient);
+unsigned long generate_private_key(unsigned int e, unsigned long euler_totient, int &iterations);
 
 /**
  * Compute the euler_totient φ(n) = (p-1)(q-1).
@@ -78,5 +84,6 @@ bool prime(unsigned int number);
  * @return true if number is prime, false otherwise
  */
 bool square_root_test(unsigned long number);
+
 
 #endif
