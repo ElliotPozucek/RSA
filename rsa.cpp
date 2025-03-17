@@ -126,11 +126,11 @@ unsigned long generate_private_key(unsigned int e, unsigned long euler_totient, 
     return u;
 }
 
-string encrypt(unsigned long n, unsigned long e, string M) {
+string encrypt(unsigned long n, unsigned long e, string M, const unordered_map<char, int>& alphabet_to_index, const unordered_map<int, char>& index_to_alphabet) {
     cout << "Encrypting message..." << endl;
     // first we need to know the size of block
     // b < ln(n) / ln(L), with L the size of the alphabet
-    int b = floor(log(n) / log(ALPHABET_SIZE));
+    int b = floor(log(n) / log(alphabet_to_index.size()));
     cout << "Block size : " << b << endl;
     cout << "Message : " << M << endl;
 
@@ -152,7 +152,7 @@ string encrypt(unsigned long n, unsigned long e, string M) {
     for (int i = 0; i < M.size() / b; i++) {
         converted_message[i] = 0;
         for (int j = 0; j < b; j++) {
-            converted_message[i] += alphabet_to_index.at(M[i * b + j]) * pow(ALPHABET_SIZE, b - j - 1);
+            converted_message[i] += alphabet_to_index.at(M[i * b + j]) * pow(alphabet_to_index.size(), b - j - 1);
         }
         cout << converted_message[i] << " ";
     }
@@ -169,19 +169,19 @@ string encrypt(unsigned long n, unsigned long e, string M) {
         // we convert the number with the alphabet
         // the size of block for converting the encrypted message to its alphabet representation is b + 1
         for (int j = 0; j < b + 1; j++) {
-            encrypted_message += index_to_alphabet.at(c / (unsigned long)pow(ALPHABET_SIZE, b + 1 - j - 1));
-            c %= (unsigned long)pow(ALPHABET_SIZE, b + 1 - j - 1);
+            encrypted_message += index_to_alphabet.at(c / (unsigned long)pow(index_to_alphabet.size(), b + 1 - j - 1));
+            c %= (unsigned long)pow(index_to_alphabet.size(), b + 1 - j - 1);
         }
     }
     cout << endl << "Encrypted message : " << encrypted_message << endl << endl;
     return encrypted_message;
 }
 
-string decrypt(unsigned long n, unsigned long d, string C) {
+string decrypt(unsigned long n, unsigned long d, string C, const unordered_map<char, int>& alphabet_to_index, const unordered_map<int, char>& index_to_alphabet) {
     cout << "Decrypting message..." << endl;
     // first we need to know the size of block
     // b < ln(n) / ln(L) + 1, with L the size of the alphabet
-    int b = floor(log(n) / log(ALPHABET_SIZE)) + 1; 
+    int b = floor(log(n) / log(alphabet_to_index.size())) + 1; 
     cout << "Block size : " << b << endl;
 
     if (C.size() % b != 0) {
@@ -202,7 +202,7 @@ string decrypt(unsigned long n, unsigned long d, string C) {
     for (int i = 0; i < C.size() / b; i++) {
         converted_message[i] = 0;
         for (int j = 0; j < b; j++) {
-            converted_message[i] += alphabet_to_index.at(C[i * b + j]) * pow(ALPHABET_SIZE, b - j - 1);
+            converted_message[i] += alphabet_to_index.at(C[i * b + j]) * pow(alphabet_to_index.size(), b - j - 1);
         }
         cout << converted_message[i] << " ";
     }
@@ -220,8 +220,8 @@ string decrypt(unsigned long n, unsigned long d, string C) {
         // we convert the number with the alphabet
         // the size of block for converting the decrypted message to its alphabet representation is b - 1
         for (int j = 0; j < b - 1; j++) {
-            decrypted_message += index_to_alphabet.at(m / (unsigned long)pow(ALPHABET_SIZE, b - j - 2));
-            m %= (unsigned long)pow(ALPHABET_SIZE, b - j - 2);
+            decrypted_message += index_to_alphabet.at(m / (unsigned long)pow(index_to_alphabet.size(), b - j - 2));
+            m %= (unsigned long)pow(index_to_alphabet.size(), b - j - 2);
         }
     }
     cout << endl << "Decrypted message : " << decrypted_message << endl << endl;

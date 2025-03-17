@@ -25,8 +25,8 @@ int main() {
 
     // rsa();
 
-    test_encrypt(2047, 179, "ENVOYEZ_2500$.", "AVOA25ALMA2PALPAR0ADC");
-    test_decrypt(2047, 411, "AVOA25ALMA2PALPAR0ADC", "ENVOYEZ_2500$.");
+    test_encrypt(2047, 179, "ENVOYEZ_2500$.", "AVOA25ALMA2PALPAR0ADC", alphabet_to_index_40, index_to_alphabet_40);
+    test_decrypt(2047, 411, "AVOA25ALMA2PALPAR0ADC", "ENVOYEZ_2500$.", alphabet_to_index_40, index_to_alphabet_40);
     
     return 0;    
 }

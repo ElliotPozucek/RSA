@@ -6,7 +6,7 @@
 #include <iostream>
 #include <random>
 #include <climits>
-#include <unordered_map>
+#include "alphabets.cpp"
 
 // warning when using exactly 32 bits (overflow). Use 28 bits for quick tests.
 #define NB_BITS_PRIME_FACTORS 25
@@ -15,29 +15,6 @@
 #define LOWER_BOUND_PRIME_FACTOR (1U << NB_BITS_PRIME_FACTORS - 4)
 #define PRIME_FACTOR_DISTANCE_THRESHOLD (1U << NB_BITS_PRIME_FACTORS / 2)
 #define NUMBER_OF_ITERATIONS_PRIME_TEST 15
-#define ALPHABET_SIZE 40
-
-// alphabet used for encryption
-const std::unordered_map<char, int> alphabet_to_index = {
-    {'A', 0}, {'B', 1}, {'C', 2}, {'D', 3}, {'E', 4}, {'F', 5},
-    {'G', 6}, {'H', 7}, {'I', 8}, {'J', 9}, {'K', 10}, {'L', 11},
-    {'M', 12}, {'N', 13}, {'O', 14}, {'P', 15}, {'Q', 16}, {'R', 17},
-    {'S', 18}, {'T', 19}, {'U', 20}, {'V', 21}, {'W', 22}, {'X', 23},
-    {'Y', 24}, {'Z', 25}, {'_', 26}, {'.', 27}, {'?', 28}, {'$', 29},
-    {'0', 30}, {'1', 31}, {'2', 32}, {'3', 33}, {'4', 34}, {'5', 35},
-    {'6', 36}, {'7', 37}, {'8', 38}, {'9', 39}
-};
-
-// index used for encryption
-const std::unordered_map<int, char> index_to_alphabet = {
-    {0, 'A'}, {1, 'B'}, {2, 'C'}, {3, 'D'}, {4, 'E'}, {5, 'F'},
-    {6, 'G'}, {7, 'H'}, {8, 'I'}, {9, 'J'}, {10, 'K'}, {11, 'L'},
-    {12, 'M'}, {13, 'N'}, {14, 'O'}, {15, 'P'}, {16, 'Q'}, {17, 'R'},
-    {18, 'S'}, {19, 'T'}, {20, 'U'}, {21, 'V'}, {22, 'W'}, {23, 'X'},
-    {24, 'Y'}, {25, 'Z'}, {26, '_'}, {27, '.'}, {28, '?'}, {29, '$'},
-    {30, '0'}, {31, '1'}, {32, '2'}, {33, '3'}, {34, '4'}, {35, '5'},
-    {36, '6'}, {37, '7'}, {38, '8'}, {39, '9'}
-};
 
 using namespace std;
 
@@ -114,9 +91,12 @@ bool square_root_test(unsigned long number);
  * @param n the modulus
  * @param e the public key
  * @param message the message to encrypt
+ * @param alphabet_to_index the alphabet dictionnary
+ * @param index_to_alphabet the index dictionnary
  * @return the encrypted message
  */
-string encrypt(unsigned long n, unsigned long e, string M);
+string encrypt(unsigned long n, unsigned long e, string M, 
+    const unordered_map<char, int>& alphabet_to_index, const unordered_map<int, char>& index_to_alphabet);
 
 /**
  * Decrypt a message using the private key.
@@ -125,6 +105,7 @@ string encrypt(unsigned long n, unsigned long e, string M);
  * @param C the message to decrypt
  * @return the decrypted message
  */
-string decrypt(unsigned long n, unsigned long d, string C);
+string decrypt(unsigned long n, unsigned long d, string C, 
+    const unordered_map<char, int>& alphabet_to_index, const unordered_map<int, char>& index_to_alphabet);
 
 #endif

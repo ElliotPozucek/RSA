@@ -1,12 +1,25 @@
 all: rsa.exe
 
+CXX = g++
+CXXFLAGS = -Wall -std=c++17
+LDFLAGS = -lssl -lcrypto
+
+hash_SHA-256.exe: alphabets.o hash_SHA-256.o rsa.o
+	$(CXX) alphabets.o hash_SHA-256.o rsa.o -o hash_SHA-256.exe $(LDFLAGS)
+
+hash_SHA-256.o: hash_SHA-256.cpp rsa.h
+	$(CXX) $(CXXFLAGS) -c hash_SHA-256.cpp
+
 TEST_FOLDER = test
 
-rsa.exe : rsa.o $(TEST_FOLDER)/test_prime.o $(TEST_FOLDER)/test_prime_factors.o $(TEST_FOLDER)/test_encrypt.o $(TEST_FOLDER)/test_decrypt.o main.o
-	g++ rsa.o $(TEST_FOLDER)/test_prime.o $(TEST_FOLDER)/test_prime_factors.o $(TEST_FOLDER)/test_encrypt.o $(TEST_FOLDER)/test_decrypt.o main.o -o rsa.exe
+rsa.exe : alphabets.o rsa.o $(TEST_FOLDER)/test_prime.o $(TEST_FOLDER)/test_prime_factors.o $(TEST_FOLDER)/test_encrypt.o $(TEST_FOLDER)/test_decrypt.o main.o
+	g++ alphabets.o rsa.o $(TEST_FOLDER)/test_prime.o $(TEST_FOLDER)/test_prime_factors.o $(TEST_FOLDER)/test_encrypt.o $(TEST_FOLDER)/test_decrypt.o main.o -o rsa.exe
 
 rsa.o : rsa.cpp rsa.h
 	g++ -c rsa.cpp
+
+alphabets.o : alphabets.cpp
+	g++ -c alphabets.cpp
 
 $(TEST_FOLDER)/test_prime.o : $(TEST_FOLDER)/test_prime.cpp
 	g++ -c $(TEST_FOLDER)/test_prime.cpp -o $(TEST_FOLDER)/test_prime.o
