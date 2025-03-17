@@ -3,8 +3,8 @@
 void test_encrypt(unsigned long n, unsigned long e, string M, string expected) {
     string encrypted = encrypt(n, e, M);
     if (encrypted == expected) {
-        cout << "Encryption test passed." << endl;
+        cout << "Encryption test passed." << endl << endl;
     } else {
-        cout << "Encryption test failed." << endl;
+        cout << "Encryption test failed." << endl << endl;
     }
 }

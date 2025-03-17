@@ -4,6 +4,7 @@
 #include "test/test_prime.h"
 #include "test/test_prime_factors.h"
 #include "test/test_encrypt.h"
+#include "test/test_decrypt.h"
 #include <cmath>
 
 
@@ -25,7 +26,7 @@ int main() {
     // rsa();
 
     test_encrypt(2047, 179, "ENVOYEZ_2500$.", "AVOA25ALMA2PALPAR0ADC");
-    
+    test_decrypt(2047, 411, "AVOA25ALMA2PALPAR0ADC", "ENVOYEZ_2500$.");
     
     return 0;    
 }
