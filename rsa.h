@@ -7,7 +7,7 @@
 #include "alphabets.cpp"
 
 // warning when using exactly 32 bits (overflow). Use 28 bits for quick tests.
-#define NB_BITS_PRIME_FACTORS 32
+#define NB_BITS_PRIME_FACTORS 28
 // subtract 1 to avoid overflow when using exactly 32 bits
 #define UPPER_BOUND_PRIME_FACTOR (1U << NB_BITS_PRIME_FACTORS) - 1
 #define LOWER_BOUND_PRIME_FACTOR (1U << NB_BITS_PRIME_FACTORS - 4)

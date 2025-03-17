@@ -1,6 +1,9 @@
 # Ignore Visual Studio Code folder
 .vscode/
 
+# Ignore hash related files
+hash_SHA-256.cpp
+
 # Prerequisites
 *.d
 

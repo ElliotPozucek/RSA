@@ -1,14 +1,6 @@
 all: rsa.exe
 
 CXX = g++
-CXXFLAGS = -Wall -std=c++17 # flags to compile hash related functions
-LDFLAGS = -lssl -lcrypto # flags to link hash related functions
-
-hash_SHA-256.exe: alphabets.o hash_SHA-256.o rsa.o
-	$(CXX) alphabets.o hash_SHA-256.o rsa.o -o hash_SHA-256.exe $(LDFLAGS)
-
-hash_SHA-256.o: hash_SHA-256.cpp rsa.h
-	$(CXX) $(CXXFLAGS) -c hash_SHA-256.cpp
 
 TEST_FOLDER = test
 
