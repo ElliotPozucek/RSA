@@ -6,7 +6,7 @@ The implementation includes key generation, modular arithmetic, and primality te
 
 Due to the complexity of the RSA algorithm, this implementation is not efficient for large key sizes (32 bits or more).
 
-KEY SIZE MAX SIZE: 32 bits (modulus 64 bits) 
+MAX KEY SIZE: 64 bits (prime factors 32 bits) 
 
 ## Table of Contents
 - [Features](#features)

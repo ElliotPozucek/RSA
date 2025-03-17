@@ -6,9 +6,11 @@
 #include <climits>
 #include "alphabets.cpp"
 
-// warning when using exactly 32 bits (overflow). Use 28 bits for quick tests.
+// WARNING: when using exactly 32 bits (overflow). Use 28 bits for quick tests.
+// Number of bits for the prime factors of the modulus. The modulus will be twice this size.
+// For example, with 32 bits, the key size will be 64 bits.
 #define NB_BITS_PRIME_FACTORS 28
-// subtract 1 to avoid overflow when using exactly 32 bits
+// Subtract 1 to avoid overflow when using exactly 32 bits
 #define UPPER_BOUND_PRIME_FACTOR (1U << NB_BITS_PRIME_FACTORS) - 1
 #define LOWER_BOUND_PRIME_FACTOR (1U << NB_BITS_PRIME_FACTORS - 4)
 #define PRIME_FACTOR_DISTANCE_THRESHOLD (1U << NB_BITS_PRIME_FACTORS / 2)
