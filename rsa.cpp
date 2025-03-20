@@ -11,78 +11,89 @@ bool square_root_test(unsigned long number) {
 }
 
 bool prime(unsigned int number) {
-    if (number <= 2) return true;
+    if (number <= 1) return false;
+    if (number == 2) return true;
     if (number % 2 == 0) return false;
     
     unsigned int d = number - 1;
     unsigned int s = 0;
-    unsigned int x;
 
     while (d % 2 == 0) {
         d /= 2;
         s++;
     }
 
-    for (int i = NUMBER_OF_ITERATIONS_PRIME_TEST; i > 0; i--) {
-        default_random_engine generator(time(0));
-        uniform_int_distribution<unsigned int> distribution(2, number - 2);
-        x = modular_exponentiation(distribution(generator), d, number);
+    default_random_engine generator(time(0));
+    uniform_int_distribution<unsigned int> distribution(2, number - 2);
+    
+    for (int i = 0; i < NUMBER_OF_ITERATIONS_PRIME_TEST; i++) {
+        unsigned long random_number = distribution(generator);
+        unsigned long x = modular_exponentiation(random_number, d, number);
 
         if (x == 1 || x == number - 1) continue;
+
+        // Boolean flag to reduce the number of futile operations
+        bool continue_loop = false;
+        
         for (int j = 1; j < s; j++) {
             x = modular_exponentiation(x, 2, number);
-            if (x == 1) return false;
-            if (x == number - 1) break;
+            if (x == number - 1) {
+                continue_loop = true;
+                break;
+            }
+            if (x == 1) return false; // definitely composite
         }
-        if (x != number - 1) return false;
+        if (!continue_loop) return false; // definitely composite
     }
     return true;
 }
 
 unsigned long modular_exponentiation(unsigned int base, unsigned int exp, unsigned long n) {
-    unsigned long temp = 1;
-    for (unsigned long exp_cpt = 1; exp_cpt <= exp; exp_cpt++) {
-        temp = base * temp % n;
+    unsigned long res = 1;
+    unsigned long b = base % n;
+
+    while (exp > 0) {
+        if (exp % 2 == 1) {
+            res = (res * b) % n; // multiply res by b if exp is odd
+        }
+        b = (b * b) % n;
+        exp /= 2;
     }
-    return temp;
+    return res;
 }
 
 unsigned long generate_modulus_prime_factors(unsigned int &p, unsigned int &q, int &iterations, bool verbose) {
     if (verbose) cout << "Generating prime factors..." << "(" << NB_BITS_PRIME_FACTORS << " bits)" << endl;
+
     default_random_engine generator(time(0));
     uniform_int_distribution<unsigned int> distribution(LOWER_BOUND_PRIME_FACTOR, UPPER_BOUND_PRIME_FACTOR);
-    while (true) {
-        if (iterations % 10 == 0 && verbose) {
-            cout << "Iterations : " << iterations << endl;
-        }
-        iterations++;
+
+    // Generate first prime factor p
+    do {
         p = distribution(generator);
-        if (prime(p)) {
-            break;
-        }
-    }
-    while (true) {
-        if (iterations % 10 == 0 && verbose) {
+        iterations++;
+        if (verbose && iterations % 10 == 0) {
             cout << "Iterations : " << iterations << endl;
         }
-        iterations++;
+    } while (!prime(p));
+
+    // Generate second prime factor q
+    // The distance between p and q must be greater than PRIME_FACTOR_DISTANCE_THRESHOLD
+    do {
         q = distribution(generator);
-        if (prime(q)) {
-            if (p > q) {
-                if (p - q > PRIME_FACTOR_DISTANCE_THRESHOLD) {
-                    break;
-                }
-            }
-            else {
-                if (q - p > PRIME_FACTOR_DISTANCE_THRESHOLD) {
-                    break;
-                }
-            }
+        iterations++;
+        if (verbose && iterations % 10 == 0) {
+            cout << "Iterations : " << iterations << endl;
         }
+    } while (!prime(q) || (p > q && p - q <= PRIME_FACTOR_DISTANCE_THRESHOLD) ||(q > p && q - p <= PRIME_FACTOR_DISTANCE_THRESHOLD)); 
+
+    if (verbose) {
+        cout << "p = " << p << endl << "q =  " << q << endl << "n = " << p * q << endl;
+        cout << "Number of iterations for prime factors generation : " << iterations << endl;
     }
-    if (verbose) cout << "p = " << p << endl << "q =  " << q << endl << "n = " << p * q << endl;
-    if (verbose) cout << "Number of iterations for prime factors generation : " << iterations << endl;
-    return p * q;
+
+    // Convert p and q to long to avoid overflow
+    return static_cast<unsigned long>(p) * q;
 }
 
 unsigned long compute_euler_totient(unsigned int p, unsigned int q) {
@@ -240,7 +251,7 @@ string decrypt(unsigned long n, unsigned long d, string C,
 bool rsa() {
     unsigned int p, q;
     int iter = 0;
-    unsigned long n = generate_modulus_prime_factors(p, q, iter);
+    unsigned long n = generate_modulus_prime_factors(p, q, iter, false);
     unsigned long euler_totient = compute_euler_totient(p, q);
     unsigned long e = generate_public_key(n, euler_totient, iter);
     unsigned long d = generate_private_key(e, euler_totient, iter);

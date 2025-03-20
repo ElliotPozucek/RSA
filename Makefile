@@ -29,4 +29,4 @@ main.o : main.cpp
 	$(CXX) -c main.cpp
 
 clean:
-	rm -f *.o $(TEST_FOLDER)/*.o
+	rm -f *.o $(TEST_FOLDER)/*.o rsa.exe

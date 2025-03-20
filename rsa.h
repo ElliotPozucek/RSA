@@ -6,16 +6,18 @@
 #include <climits>
 #include "alphabets.cpp"
 
-// WARNING: when using exactly 32 bits (overflow). Use 28 bits for quick tests.
 // Number of bits for the prime factors of the modulus. The modulus will be twice this size.
 // For example, with 32 bits, the key size will be 64 bits.
-#define NB_BITS_PRIME_FACTORS 28
+// WARNING: when using exactly 32 bits. It does not cause issue for exactly 32 bits.
+// Prime factors greater than 2^32 - 1 (32 bits) will cause overflow and are not supported yet.
+// The maximum supported key size is 64 bits (32 bits for each prime factors).
+#define NB_BITS_PRIME_FACTORS 32
 // Subtract 1 to avoid overflow when using exactly 32 bits
 #define UPPER_BOUND_PRIME_FACTOR (1U << NB_BITS_PRIME_FACTORS) - 1
 #define LOWER_BOUND_PRIME_FACTOR (1U << NB_BITS_PRIME_FACTORS - 4)
 #define PRIME_FACTOR_DISTANCE_THRESHOLD (1U << NB_BITS_PRIME_FACTORS / 2)
 // Used in the Miller-Rabin primality test. Must be at least 8.
-#define NUMBER_OF_ITERATIONS_PRIME_TEST 10
+#define NUMBER_OF_ITERATIONS_PRIME_TEST 8
 
 using namespace std;
 
@@ -65,17 +67,20 @@ unsigned long generate_private_key(unsigned int e, unsigned long euler_totient, 
 unsigned long compute_euler_totient(unsigned int p, unsigned int q);
 
 /**
- * Return the result of base^exp mod n, using a fast algorithm.
+ * Return the result of (base^exp) % n using exponentiation by squaring.
+ * Complexity: O(log(exp))
  * @param base the base 
  * @param exp the exponent
  * @param n the modulo
- * @return base^exp mod n
+ * @return (base^exp) % n
  */ 
 unsigned long modular_exponentiation(unsigned int base, unsigned int exp, unsigned long n);
 
 /**
- * Check if a number is prime. Caps to 32 bits unsigned integers.
- * This function implement the Miller-Rabin primality test.
+ * Check if a number is prime using the Miller-Rabin primality test.
+ * Caps to 32-bits unsigned integers.
+ * This test is probabilistic for large number.
+ * The number of repetitions for the Miller-Rabin test is defined by NUMBER_OF_ITERATIONS_PRIME_TEST.
  * @param number number to test
  * @return true if n is probably prime, false if definitely composite (not prime)
  */
