@@ -23,9 +23,13 @@ using namespace std;
 
 /**
  * Generate the RSA keys.
+ * 
+ * @param interactive_encryption if true, the user will be asked to enter the message to encrypt
+ * @param alphabet_to_index the alphabet dictionnary
+ * @param index_to_alphabet the index dictionnary
  * @return true if the keys were successfully generated, false otherwise
  */
-bool rsa();
+bool rsa(const unordered_map<char, int>& alphabet_to_index, const unordered_map<int, char>& index_to_alphabet, bool interactive_encryption = false);
 
 /**
  * Generate the two prime factors of the modulus.

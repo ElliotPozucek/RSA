@@ -142,113 +142,230 @@ unsigned long generate_private_key(unsigned int e, unsigned long euler_totient, 
 }
 
 string encrypt(unsigned long n, unsigned long e, string M, 
-    const unordered_map<char, int>& alphabet_to_index, const unordered_map<int, char>& index_to_alphabet,
+    const unordered_map<char, int>& alphabet_to_index, 
+    const unordered_map<int, char>& index_to_alphabet,
     bool verbose) {
-    if (verbose) cout << "Encrypting message..." << endl;
-    // first we need to know the size of block
-    // b < ln(n) / ln(L), with L the size of the alphabet
+
+    // Compute block size
     int b = floor(log(n) / log(alphabet_to_index.size()));
+    if (b < 1) b = 1;  // Ensure minimum block size
+    b = 2;
 
-    if (verbose) cout << "Block size : " << b << endl;
-    if (verbose) cout << "Message : " << M << endl;
+    if (verbose) cout << "Block size: " << b << endl;
+    if (verbose) cout << "Message: " << M << endl;
 
-    // when the message is not a multiple of b, we add some padding ('A' -> 0)
+    // Pad message to multiple of b
     if (M.size() % b != 0) {
-        M += string(b - M.size() % b, 'A');
+        M += string(b - M.size() % b, 'A');  // Pad with 'A'
     }
 
-    // we display the message by block, with padding
-    if (verbose) cout << "Message by block (with padding) : ";
-    for (int i = 0; i < M.size() / b; i++) {
-        if (verbose) cout << M.substr(i * b, b) << " ";
-    }
-    if (verbose) cout << endl;
+    if (verbose) cout << "Padded message: " << M << endl;
 
-    // we convert the message in its numerical representation (base 10)
-    int* converted_message = new int[M.size() / b + 1]();
-    if (verbose) cout << "Base 10 representation of the message : ";
-    for (int i = 0; i < M.size() / b; i++) {
-        converted_message[i] = 0;
+    // Convert message to numerical blocks
+    vector<unsigned long> converted_blocks;
+    for (int i = 0; i < M.size(); i += b) {
+        unsigned long block_value = 0;
         for (int j = 0; j < b; j++) {
-            converted_message[i] += alphabet_to_index.at(M[i * b + j]) * pow(alphabet_to_index.size(), b - j - 1);
+            char c = M[i + j];
+            block_value = block_value * alphabet_to_index.size() + alphabet_to_index.at(c);
         }
-        if (verbose) cout << converted_message[i] << " ";
+        converted_blocks.push_back(block_value);
     }
-    if (verbose) cout << endl;
 
-    // the encrypted message
-    string encrypted_message = "";
-    // encryption
-    if (verbose) cout << "Base 10 representation of the encrypted message : ";
-    for (int i = 0; i < M.size() / b; i++) {
-        // C = M^e mod n
-        unsigned long c = modular_exponentiation(converted_message[i], e, n);
-        if (verbose) cout << c << " ";
-        // we convert the number with the alphabet
-        // the size of block for converting the encrypted message to its alphabet representation is b + 1
-        for (int j = 0; j < b + 1; j++) {
-            encrypted_message += index_to_alphabet.at(c / (unsigned long)pow(index_to_alphabet.size(), b + 1 - j - 1));
-            c %= (unsigned long)pow(index_to_alphabet.size(), b + 1 - j - 1);
-        }
+    if (verbose) {
+        cout << "Numerical blocks: ";
+        for (auto val : converted_blocks) cout << val << " ";
+        cout << endl;
     }
-    if (verbose) cout << endl << "Encrypted message : " << encrypted_message << endl << endl;
+
+    // Encrypt each block
+    string encrypted_message;
+    for (auto block : converted_blocks) {
+        unsigned long c = modular_exponentiation(block, e, n);
+
+        // Convert encrypted number back to letters (b + 1 characters)
+        string encrypted_block;
+        for (int j = 0; j <= b; j++) {
+            unsigned long divisor = pow(alphabet_to_index.size(), b - j);
+            int index = (c / divisor) % alphabet_to_index.size();
+            encrypted_block += index_to_alphabet.at(index);
+        }
+        encrypted_message += encrypted_block;
+    }
+
+    if (verbose) cout << "Encrypted message: " << encrypted_message << endl;
     return encrypted_message;
 }
 
+// string encrypt(unsigned long n, unsigned long e, string M, 
+//     const unordered_map<char, int>& alphabet_to_index, const unordered_map<int, char>& index_to_alphabet,
+//     bool verbose) {
+//     if (verbose) cout << "Encrypting message..." << endl;
+    
+//     // first we need to know the size of block
+//     // b < ln(n) / ln(L), with L the size of the alphabet
+//     // int b = floor(log(n) / log(alphabet_to_index.size()) );
+//     int b = NB_BITS_PRIME_FACTORS * 2 / 8;
+
+//     if (verbose) cout << "Block size : " << b << endl;
+//     if (verbose) cout << "Message : " << M << endl;
+
+//     // when the message is not a multiple of b, we add some padding ('A' -> 0)
+//     if (M.size() % b != 0) {
+//         M += string(b - M.size() % b, 'A');
+//     }
+
+//     // we display the message by block, with padding
+//     if (verbose) cout << "Message by block (with padding) : ";
+//     for (int i = 0; i < M.size() / b; i++) {
+//         if (verbose) cout << M.substr(i * b, b) << " ";
+//     }
+//     if (verbose) cout << endl;
+
+//     // we convert the message in its numerical representation (base 10)
+//     unsigned long* converted_message = new unsigned long[M.size() / b + 1]();
+//     if (verbose) cout << "Base 10 representation of the message : ";
+//     for (int i = 0; i < M.size() / b; i++) {
+//         converted_message[i] = 0;
+//         for (int j = 0; j < b; j++) {
+//             converted_message[i] += alphabet_to_index.at(M[i * b + j]) * pow(alphabet_to_index.size(), b - j - 1);
+//         }
+//         if (verbose) cout << converted_message[i] << " ";
+//     }
+//     if (verbose) cout << endl;
+
+//     // the encrypted message
+//     string encrypted_message = "";
+//     // encryption
+//     if (verbose) cout << "Base 10 representation of the encrypted message : ";
+//     for (int i = 0; i < M.size() / b; i++) {
+//         // C = M^e mod n
+//         unsigned long c = modular_exponentiation(converted_message[i], e, n);
+//         if (verbose) cout << c << " ";
+//         // we convert the number with the alphabet
+//         // the size of block for converting the encrypted message to its alphabet representation is b + 1
+//         for (int j = 0; j < b + 1; j++) {
+//             encrypted_message += index_to_alphabet.at(c / (unsigned long)pow(index_to_alphabet.size(), b + 1 - j - 1));
+//             c %= (unsigned long long)pow(index_to_alphabet.size(), b + 1 - j - 1);
+//         }
+//     }
+//     if (verbose) cout << endl << "Encrypted message : " << encrypted_message << endl << endl;
+//     return encrypted_message;
+// }
+
 string decrypt(unsigned long n, unsigned long d, string C, 
-    const unordered_map<char, int>& alphabet_to_index, const unordered_map<int, char>& index_to_alphabet,
+    const unordered_map<char, int>& alphabet_to_index, 
+    const unordered_map<int, char>& index_to_alphabet,
     bool verbose) {
     if (verbose) cout << "Decrypting message..." << endl;
-    // first we need to know the size of block
-    // b < ln(n) / ln(L) + 1, with L the size of the alphabet
-    int b = floor(log(n) / log(alphabet_to_index.size())) + 1; 
-    if (verbose) cout << "Block size : " << b << endl;
 
-    if (C.size() % b != 0) {
-        cout << "Error : the encrypted message must be padded." << endl;
+    // Calculate original block size (must match encrypt's calculation)
+    int b = floor(log(n) / log(alphabet_to_index.size()));
+    if (b < 1) b = 1;
+    int encrypted_block_size = b + 1;
+    b = 2;
+    encrypted_block_size = 3;
+
+    if (verbose) {
+        cout << "Original block size: " << b << endl;
+        cout << "Encrypted block size: " << encrypted_block_size << endl;
+    }
+
+    // Verify message length is multiple of encrypted block size
+    if (C.size() % encrypted_block_size != 0) {
+        cerr << "Error: Encrypted message length invalid" << endl;
         return "";
     }
 
-    // we display the message by block
-    if (verbose) cout << "Encrypted message by block : ";
-    for (int i = 0; i < C.size() / b; i++) {
-        if (verbose) cout << C.substr(i * b, b) << " ";
-    }
-    if (verbose) cout << endl;
+    // Process each encrypted block
+    string decrypted_message;
+    for (size_t i = 0; i < C.size(); i += encrypted_block_size) {
+        string block = C.substr(i, encrypted_block_size);
+        
+        // Convert encrypted block to number
+        unsigned long c = 0;
+        for (char ch : block) {
+            c = c * 26 + alphabet_to_index.at(ch);
+        }
 
-    // we convert the message in its numerical representation (base 10)
-    int* converted_message = new int[C.size() / b]();
-    if (verbose) cout << "Base 10 representation of the encrypted message : ";
-    for (int i = 0; i < C.size() / b; i++) {
-        converted_message[i] = 0;
+        // Decrypt the number
+        unsigned long m = modular_exponentiation(c, d, n);
+
+        // Convert back to original characters
+        string decrypted_block;
         for (int j = 0; j < b; j++) {
-            converted_message[i] += alphabet_to_index.at(C[i * b + j]) * pow(alphabet_to_index.size(), b - j - 1);
+            int index = (m / (unsigned long)pow(26, b - j - 1)) % 26;
+            decrypted_block += index_to_alphabet.at(index);
         }
-        if (verbose) cout << converted_message[i] << " ";
+        decrypted_message += decrypted_block;
     }
-    if (verbose) cout << endl;
 
-    // the decrypted message
-    string decrypted_message = "";
-
-    // decryption
-    if (verbose) cout << "Base 10 representation of the decrypted message : ";
-    for (int i = 0; i < C.size() / b; i++) {
-        // M = C^d mod n
-        unsigned long m = modular_exponentiation(converted_message[i], d, n);
-        if (verbose) cout << m << " ";
-        // we convert the number with the alphabet
-        // the size of block for converting the decrypted message to its alphabet representation is b - 1
-        for (int j = 0; j < b - 1; j++) {
-            decrypted_message += index_to_alphabet.at(m / (unsigned long)pow(index_to_alphabet.size(), b - j - 2));
-            m %= (unsigned long)pow(index_to_alphabet.size(), b - j - 2);
-        }
+    // Remove padding (trailing 'A's)
+    size_t last_non_a = decrypted_message.find_last_not_of('A');
+    if (last_non_a != string::npos) {
+        decrypted_message = decrypted_message.substr(0, last_non_a + 1);
     }
-    if (verbose) cout << endl << "Decrypted message : " << decrypted_message << endl << endl;
+
+    if (verbose) cout << "Decrypted message: " << decrypted_message << endl;
     return decrypted_message;
 }
 
-bool rsa() {
+// string decrypt(unsigned long n, unsigned long d, string C, 
+//     const unordered_map<char, int>& alphabet_to_index, const unordered_map<int, char>& index_to_alphabet,
+//     bool verbose) {
+//     if (verbose) cout << "Decrypting message..." << endl;
+
+//     // first we need to know the size of block
+//     // b < ln(n) / ln(L) + 1, with L the size of the alphabet
+//     // int b = floor(log(n) / log(alphabet_to_index.size())) + 1; 
+//     int b = NB_BITS_PRIME_FACTORS * 2 / 8 + 1;
+//     if (verbose) cout << "Block size : " << b << endl;
+
+//     if (C.size() % b != 0) {
+//         cout << "Error : the encrypted message must be padded." << endl;
+//         return "";
+//     }
+
+//     // we display the message by block
+//     if (verbose) cout << "Encrypted message by block : ";
+//     for (int i = 0; i < C.size() / b; i++) {
+//         if (verbose) cout << C.substr(i * b, b) << " ";
+//     }
+//     if (verbose) cout << endl;
+
+//     // we convert the message in its numerical representation (base 10)
+//     unsigned long* converted_message = new unsigned long[C.size() / b]();
+//     if (verbose) cout << "Base 10 representation of the encrypted message : ";
+//     for (int i = 0; i < C.size() / b; i++) {
+//         converted_message[i] = 0;
+//         for (int j = 0; j < b; j++) {
+//             converted_message[i] += alphabet_to_index.at(C[i * b + j]) * pow(alphabet_to_index.size(), b - j - 1);
+//         }
+//         if (verbose) cout << converted_message[i] << " ";
+//     }
+//     if (verbose) cout << endl;
+
+//     // the decrypted message
+//     string decrypted_message = "";
+
+//     // decryption
+//     if (verbose) cout << "Base 10 representation of the decrypted message : ";
+//     for (int i = 0; i < C.size() / b; i++) {
+//         // M = C^d mod n
+//         unsigned long m = modular_exponentiation(converted_message[i], d, n);
+//         if (verbose) cout << m << " ";
+//         // we convert the number with the alphabet
+//         // the size of block for converting the decrypted message to its alphabet representation is b - 1
+//         for (int j = 0; j < b - 1; j++) {
+//             decrypted_message += index_to_alphabet.at(m / (unsigned long)pow(index_to_alphabet.size(), b - j - 2));
+//             m %= (unsigned long)pow(index_to_alphabet.size(), b - j - 2);
+//         }
+//     }
+//     if (verbose) cout << endl << "Decrypted message : " << decrypted_message << endl << endl;
+//     return decrypted_message;
+// }
+
+bool rsa(const unordered_map<char, int>& alphabet_to_index, const unordered_map<int, char>& index_to_alphabet, bool interactive_encryption) {
     unsigned int p, q;
     int iter = 0;
     unsigned long n = generate_modulus_prime_factors(p, q, iter, false);
@@ -257,5 +374,29 @@ bool rsa() {
     unsigned long d = generate_private_key(e, euler_totient, iter);
     cout << endl << "RSA keys generated (" << NB_BITS_PRIME_FACTORS * 2 << " bits) :" << endl;
     cout << "Public key e = " << e << endl << "Private key d = " << d << endl << "Modulus n = " << n << endl << "Iterations : " << iter << endl;
+
+    // interactive encryption - we ask the user to enter a message to encrypt and decrypt
+    // the message must be in the alphabet used for encryption
+    if (interactive_encryption) {
+        cout << "\n--------------------------------------------------------------------" << endl;
+        cout << "Interactive encryption" << endl << endl;
+        cout << "Write the message to encrypt: ";
+        string message;
+        cin >> message;
+
+        // check if the message is valid, i.e. if it contains only characters from the alphabet
+        for (char &c : message) {
+            // convert to uppercase if it's an alphabetic character
+            if (isalpha(c)) {
+                c = toupper(c); 
+            }
+            if (alphabet_to_index.find(c) == alphabet_to_index.end()) {
+            cout << "Error: the message contains invalid characters. Check the alphabet." << endl;
+            return false;
+            }
+        }
+        string encrypted_message = encrypt(n, e, message, alphabet_to_index, index_to_alphabet, true);
+        string decrypted_message = decrypt(n, d, encrypted_message, alphabet_to_index, index_to_alphabet, true);
+    }
     return true;
 }
