@@ -8,4 +8,5 @@ void test_encrypt(unsigned long n, unsigned long e, string M, string expected,
     } else {
         cout << "Encryption test failed." << endl << endl;
     }
+    
 }
