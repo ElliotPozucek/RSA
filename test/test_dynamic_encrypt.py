@@ -22,7 +22,7 @@ def dynamic_test_encrypt():
             return
 
     # Encrypt and decrypt the message
-    p, q, n, e, d = rsa()
+    p, q, n, e, d, iterations = rsa()
     encrypted = encrypt(n, e, message, alphabet_to_index_40, index_to_alphabet_40)
     decrypted = decrypt(n, d, encrypted, alphabet_to_index_40, index_to_alphabet_40)
     
