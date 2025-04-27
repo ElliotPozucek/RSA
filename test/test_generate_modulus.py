@@ -1,6 +1,6 @@
-from rsa import generate_modulus_prime_factors, square_root_test, prime, NB_BITS_PRIME_FACTORS
+from rsa import generate_modulus_prime_factors, square_root_test, prime
 
-def test_generate_modulus_prime_factors(miller_rabin = True):
+def test_generate_modulus_prime_factors(key_size_bits: int = 128, miller_rabin = True):
     """
     Test the generation of the modulus prime factors.
     This test checks if the generated prime factors p and q are indeed prime,
@@ -8,38 +8,55 @@ def test_generate_modulus_prime_factors(miller_rabin = True):
 
     It was used in a Test-Driven Development (TDD) approach.
 
-    :param miller_rabin: If True, use Miller-Rabin primality test, otherwise use simple square root test.
-    Note that the square root test is 100% accurate (as opposed to Miller-Rabin which is probabilistic), but astronomically slow for large numbers.
+    Args:
+        key_size_bits (int): The size of the key in bits. Default is 128 bits.
+        miller_rabin: If True, use Miller-Rabin primality test, otherwise use simple square root test.
+        Note that the square root test is 100% accurate (as opposed to Miller-Rabin which is probabilistic), but astronomically slow for large numbers.
     """
-    p, q, n = generate_modulus_prime_factors()
-    print("Testing prime factors generation...")
-    print(f"p = {p}\nq = {q}\nn = {n}")
+
+    print("\n" + "=" * 80)
+    print(f"{'MODULUS PRIME FACTORS GENERATION TEST':^80}")
+    print("=" * 80)
+
+    p, q, n = generate_modulus_prime_factors(key_size_bits)
+
+    print(f"Prime p: ({key_size_bits//2} bits)\n{p}\n")
+    print(f"Prime q: ({key_size_bits//2} bits)\n{q}\n")
+    
+    print(f"Modulus n ({key_size_bits} bits)\n{n}\n")
+
     diff = abs(p - q)
-    print(f"Difference between q and p: {diff}")
     
     if miller_rabin:
-        is_q_prime = prime(q)
+        print("Using Miller-Rabin primality test...")
         is_p_prime = prime(p)
+        is_q_prime = prime(q)
     else:
-        is_q_prime = square_root_test(q)
+        print("Using Square Root primality test (slow but deterministic)...")
         is_p_prime = square_root_test(p)
+        is_q_prime = square_root_test(q)
     
     if not is_p_prime and not is_q_prime:
-        print("p and q are not prime")
+        print(f"[FAILED] Both p and q are not prime.\n")
         return
     if not is_p_prime:
-        print("p is not prime")
+        print(f"[FAILED] Prime p is not prime.\n")
         return
     if not is_q_prime:
-        print("q is not prime")
+        print(f"[FAILED] Prime q is not prime.\n")
         return
+    print(f"[PASSED] Both primes p and q are prime.\n")
 
-    if NB_BITS_PRIME_FACTORS <= 32:
+    if (key_size_bits // 2) <= 32:
         if p == q:
-            print("p and q are equal, which is invalid.")
+            print(f"[FAILED] Primes p and q are equal, which is invalid.\n")
             return
     else:
-        if diff <= (NB_BITS_PRIME_FACTORS // 32):
-            print("p and q are too close.")
+        if diff <= ((key_size_bits // 2) // 32):
+            print(f"[FAILED] Primes p and q are too close.\n")
             return
-    print("p and q are appropriate prime factors.")
+    print(f"[PASSED] Primes p and q are appropriately distant.\n")
+
+    print("=" * 80)
+    print(f"{'End of Prime Factors Test':^80}")
+    print("=" * 80 + "\n")
