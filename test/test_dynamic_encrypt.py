@@ -2,7 +2,7 @@ from rsa import encrypt, rsa, decrypt
 from alphabet import alphabet_to_index_40, index_to_alphabet_40
 import time
 
-def dynamic_test_encrypt(key_size_bits: int = 128, use_fixed_e: bool = False):
+def test_dynamic_encrypt(key_size_bits: int = 128, use_fixed_e: bool = False):
     """
     Dynamic test for the encryption and decryption functions.
     This test asks the user to input a message and then encrypts and decrypts it.
@@ -76,5 +76,5 @@ def dynamic_test_encrypt(key_size_bits: int = 128, use_fixed_e: bool = False):
         print(f"\n[FAILED] Dynamic encryption/decryption test failed. Messages do not match.\n")
 
     print("=" * 80)
-    print(f"{'End of Dynamic Test':^80}")
+    print(f"{'End of Dynamic Encryption/Decryption Test':^80}")
     print("=" * 80 + "\n")

@@ -2,10 +2,6 @@ import math
 import random
 import time
 
-# Number of bits for each prime factor (p and q)
-# The key size will be 2 * NB_BITS_PRIME_FACTORS
-# For example, if NB_BITS_PRIME_FACTORS = 1024, the key size will be 2048 bits.
-# NB_BITS_PRIME_FACTORS = 2048
 
 # Number of iterations for the Miller-Rabin primality test
 # The more iterations, the more accurate the test, but also slower.

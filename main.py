@@ -3,9 +3,8 @@ from test.test_prime import test_prime
 from test.test_generate_modulus import test_generate_modulus_prime_factors
 from test.test_encrypt import test_encrypt
 from test.test_decrypt import test_decrypt
-from test.test_dynamic_encrypt import dynamic_test_encrypt
+from test.test_dynamic_encrypt import test_dynamic_encrypt
 from test.test_rsa import test_rsa
-from rsa import rsa
 
 def main():
     print("\n" + "=" * 80)
@@ -33,18 +32,17 @@ def main():
     # test_modular_expo()
     # test_encrypt()
     # test_decrypt()
-
-    if input("Run prime number tests? (y/n) [default: n]: ").strip().lower() == 'y':
-        test_prime()
+    # test_prime()
 
     if input("Run modulus generation tests? (y/n) [default: n]: ").strip().lower() == 'y':
         test_generate_modulus_prime_factors(key_size_bits)
 
-    if input("Run dynamic encryption tests? (y/n) [default: n]: ").strip().lower() == 'y':
-        dynamic_test_encrypt(key_size_bits, use_fixed_e)
-
-    if input("Run RSA keys generation test ? (y/n) [default: y]: ").strip().lower() != 'n':
+    if input("Run RSA keys generation test ? (y/n) [default: n]: ").strip().lower() == 'y':
         test_rsa(key_size_bits, use_fixed_e)
+
+    if input("Run dynamic encryption tests? (y/n) [default: y]: ").strip().lower() != 'n':
+        test_dynamic_encrypt(key_size_bits, use_fixed_e)
+
 
 if __name__ == "__main__":
     main()
